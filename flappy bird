@@ -25,6 +25,8 @@ ground = pygame.image.load("flappy bird folder/flappy bird ground.png")
 
 pipe = pygame.image.load("flappy bird folder/pipe for flappy bird.png")
 
+
+
 class Bird (pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__()
@@ -39,17 +41,70 @@ fb = Bird(100,450)
 bird_sprites = pygame.sprite.Group()
 bird_sprites.add(fb)
 
+class Pipe (pygame.sprite.Sprite):
+    def __init__(self,x,y,pos):
+        super().__init__()
+        self.image = pipe
+        self.rect = self.image.get_rect()
+        if pos == 1:
+            self.image = pygame.transform.flip(self.image,False,True)
+            self.rect.bottomleft = (x,y)
+
+        if pos == 0:
+            self.image.topleft = (x,y)
+    def update(self):
+        self.rect.x = self.rect.x - 2
+
+
+
+
+
+pipe_sprites = pygame.sprite.Group()
+
+pipe_frequency = 3000
+last_pipe = pygame.time.get_ticks()-pipe_frequency
+
 groundx = 0
+
+game_over = False
+
+flying = False
 
 run = 1
 
 while run == 1:
     screen.blit(bg,(0,0))
     screen.blit(ground,(groundx,750))
-    groundx -= 2
     bird_sprites.draw(screen)
 
+    print("hello ")
+    current_time = pygame.time.get_ticks()
+    if current_time - last_pipe > pipe_frequency:
+
+        topipe = Pipe(864,275,1) 
+        pipe_sprites.add(topipe)
+
+        bottompipe = Pipe(864,475,0)
+        pipe_sprites.add(bottompipe)
+        
+        last_pipe = current_time
+
+    pipe_sprites.draw(screen)
+
+    if flying == True:
+        groundx -= 2
+        if groundx <= -36:
+            groundx = 0
+        pipe_sprites.update()
+
+
+
     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN and game_over == False and flying == False:
+            flying = True
+
+
+
         if event.type == pygame.QUIT:
             run = 0
 
