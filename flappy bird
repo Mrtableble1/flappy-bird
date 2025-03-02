@@ -60,11 +60,6 @@ class Bird (pygame.sprite.Sprite):
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
-
-
-
-
-
     
 
 fb = Bird(100,450)
@@ -84,11 +79,11 @@ class Pipe (pygame.sprite.Sprite):
             self.rect.topleft = (x,y+100)
     def update(self):
         self.rect.x = self.rect.x - 2
+        if self.rect.x < -50:
+            self.kill()
 
 
-
-
-
+score = 0
 pipe_sprites = pygame.sprite.Group()
 
 pipe_frequency = 3000
@@ -120,6 +115,15 @@ while run == 1:
         
         last_pipe = current_time
 
+
+    font = pygame.font.SysFont("Arial",25)
+    msg = font.render("score: "+str(score),True,"blue")
+    screen.blit(msg,(50,50))
+    
+    if fb.rect.x == pipe_sprites.sprites()[0].rect.x and game_over == False:
+        score += 10
+
+
     if flying == True:       
         groundx -= 2
         if groundx <= -36:
@@ -129,8 +133,9 @@ while run == 1:
 
     if game_over == True:
         font = pygame.font.SysFont("Arial",50)
-        msg = font.render("Game over",True,"Green")
-        screen.blit(msg,(432,450))
+        msg = font.render("GAME OVER!",True,"red")
+        screen.blit(msg,(300,375))
+
 
     if len(pipe_sprites) > 0:
         if pygame.sprite.groupcollide(pipe_sprites,bird_sprites,False,True):
